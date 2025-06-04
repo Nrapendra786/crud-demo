@@ -29,6 +29,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+		<GOOGLE_CLOUD_PROJECT>springboot-demo-461915</GOOGLE_CLOUD_PROJECT>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -70,6 +71,11 @@
 
 	<build>
 		<plugins>
+<!--				<plugin>-->
+<!--					<groupId>com.google.cloud.tools</groupId>-->
+<!--					<artifactId>jib-maven-plugin</artifactId>-->
+<!--					<version>3.4.5</version>-->
+<!--				</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -83,7 +89,7 @@
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
-			</plugin>
+			</plugin>6
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

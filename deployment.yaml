@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-java-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-java-1
+  template:
+    metadata:
+      labels:
+        app: hello-java-1
+    spec:
+      containers:
+        - name: hello-java
+          image: europe-west3-docker.pkg.dev/helpful-seer-461819-d5/springboot-kubernetes-demo/hello-java:v1
+          ports:
+            - containerPort: 8080
