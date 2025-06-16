@@ -16,8 +16,6 @@ WORKDIR /app
 
 COPY --from=builder ./app/target/*.jar ./app.jar
 
-EXPOSE 8090
-
-#ENTRYPOINT ["java", "-jar", "app.jar"]
+EXPOSE 8080
 
 CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "app.jar"]

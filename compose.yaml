@@ -1,3 +1,6 @@
+networks:
+  postgres:
+    driver: bridge
 services:
   app:
     build:
@@ -5,21 +8,21 @@ services:
       dockerfile: Dockerfile
     container_name: app
     depends_on:
-      - db
+      - postgres
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5433/$YOUR_DB_NAME
-      - SPRING_DATASOURCE_USERNAME=$YOUR_USERNAME
-      - SPRING_DATASOURCE_PASSWORD=$YOUR_PASSWORD
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+        SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/test_db
+        SPRING_DATASOURCE_USERNAME: ${YOUR_USERNAME}
+        SPRING_DATASOURCE_PASSWORD: ${YOUR_PASSWORD}
+        SPRING_JPA_HIBERNATE_DDL_AUTO: create
     ports:
-      - "8082:8081"
+      - "8081:8080"
       - "5005:5005"
-  db:
+  postgres:
     image: postgres
-    container_name: db
+    container_name: postgres
     environment:
-      - POSTGRES_USER=$YOUR_USERNAME
-      - POSTGRES_PASSWORD=$YOUR_PASSWORD
-      - POSTGRES_DB=$YOUR_DB_NAME
+      POSTGRES_USER: ${YOUR_USERNAME}
+      POSTGRES_PASSWORD: ${YOUR_PASSWORD}
+      POSTGRES_DB: test_db
     ports:
       - "5433:5432"
