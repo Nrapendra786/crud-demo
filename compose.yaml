@@ -1,28 +1,130 @@
 networks:
-  postgres:
+  app-network:
     driver: bridge
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: app
-    depends_on:
-      - postgres
-    environment:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/test_db
-        SPRING_DATASOURCE_USERNAME: ${YOUR_USERNAME}
-        SPRING_DATASOURCE_PASSWORD: ${YOUR_PASSWORD}
-        SPRING_JPA_HIBERNATE_DDL_AUTO: create
-    ports:
-      - "8081:8080"
-      - "5005:5005"
-  postgres:
+  postgres-instance-1:
     image: postgres
-    container_name: postgres
+    container_name: postgres-instance-1
     environment:
       POSTGRES_USER: ${YOUR_USERNAME}
       POSTGRES_PASSWORD: ${YOUR_PASSWORD}
       POSTGRES_DB: test_db
     ports:
       - "5433:5432"
+    networks:
+      - app-network
+  postgres-instance-2:
+    image: postgres
+    container_name: postgres-instance-2
+    environment:
+      POSTGRES_USER: ${YOUR_USERNAME}
+      POSTGRES_PASSWORD: ${YOUR_PASSWORD}
+      POSTGRES_DB: test_db
+    ports:
+      - "5434:5432"
+    networks:
+      - app-network
+  crud-demo-instance1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crud-demo-instance-1
+    ports:
+      - "8081:8081"  # Optional if you need local access too
+    environment:
+      SPRING_PROFILES_ACTIVE: dev-instance1
+    networks:
+      - app-network
+  crud-demo-instance2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crud-demo-instance-2
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev-instance2
+    networks:
+      - app-network
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx-failover
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+    environment:
+      - HTTP_HOST_APP1=localhost:8081
+      - HTTP_HOST_APP2=localhost:8082
+    depends_on:
+      - crud-demo-instance1
+      - crud-demo-instance2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#networks:
+#  postgres:
+#    driver: bridge
+#services:
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: app
+#    depends_on:
+#      - postgres
+#    environment:
+#        SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/test_db
+#        SPRING_DATASOURCE_USERNAME: ${YOUR_USERNAME}
+#        SPRING_DATASOURCE_PASSWORD: ${YOUR_PASSWORD}
+#        SPRING_JPA_HIBERNATE_DDL_AUTO: create
+#    ports:
+#      - "8081:8080"
+#      - "5005:5005"
+#  postgres-instance-1:
+#    image: postgres
+#    container_name: postgres-instance-1
+#    environment:
+#      POSTGRES_USER: ${YOUR_USERNAME}
+#      POSTGRES_PASSWORD: ${YOUR_PASSWORD}
+#      POSTGRES_DB: test_db
+#    ports:
+#      - "5433:5432"
+#  postgres-instance-2:
+#    image: postgres
+#    container_name: postgres-instance-2
+#    environment:
+#      POSTGRES_USER: ${YOUR_USERNAME}
+#      POSTGRES_PASSWORD: ${YOUR_PASSWORD}
+#      POSTGRES_DB: test_db
+#    ports:
+#      - "5434:5432"
